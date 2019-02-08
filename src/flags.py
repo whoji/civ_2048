@@ -30,7 +30,7 @@ class Flags(object):
         # size and pos conf (general and menu)
         self.window_w = 800
         self.window_h = 600
-        self.tile_size = 100
+        self.tile_size = 50
         self.map_rows = 5
         self.map_cols = 5
         self.status_bar_size = 60
@@ -92,8 +92,8 @@ class Flags(object):
         self.move_frame = 10 # frames to finish the move
 
         # load texture
-        self.__get_textures()
-        self.__resize_texture()
+        #self.__get_textures()
+        #self.__resize_texture()
 
         # load sound effects
         #self.__get_sound()
@@ -124,45 +124,45 @@ class Flags(object):
             self.map_rows * self.tile_size / 2)
         return offset_x, offset_y
 
-    def __get_textures(self):
-        self.textures = {
-            -1 : pygame.image.load(self.proj_path + 'asset/stone/stone_0.png'),
-            1 : pygame.image.load(self.proj_path + 'asset/stone/stone_a.png'),
-            2 : pygame.image.load(self.proj_path + 'asset/stone/stone_b.png'),
-            4 : pygame.image.load(self.proj_path + 'asset/stone/stone_1.png'),
-            8 : pygame.image.load(self.proj_path + 'asset/stone/stone_2.png'),
-            16 : pygame.image.load(self.proj_path + 'asset/stone/stone_3.png'),
-            32 : pygame.image.load(self.proj_path + 'asset/stone/stone_4.png'),
-            64 : pygame.image.load(self.proj_path + 'asset/stone/stone_5.png'),
-            128 : pygame.image.load(self.proj_path + 'asset/stone/stone_6.png'),
-            256 : pygame.image.load(self.proj_path + 'asset/stone/stone_7.png'),
-            512 : pygame.image.load(self.proj_path + 'asset/stone/stone_8.png'),
-            1024 : pygame.image.load(self.proj_path + 'asset/stone/stone_9.png'),
-            2048 : pygame.image.load(self.proj_path + 'asset/stone/stone_10.png'),
-            4096 : pygame.image.load(self.proj_path + 'asset/stone/stone_11.png'),
-            8192 : pygame.image.load(self.proj_path + 'asset/stone/stone_12.png'),
-            16384 : pygame.image.load(self.proj_path + 'asset/stone/stone_13.png'),           
-            32768 : pygame.image.load(self.proj_path + 'asset/stone/stone_14.png')       
-        }
+    # def __get_textures(self):
+    #     self.textures = {
+    #         -1 : pygame.image.load(self.proj_path + 'asset/stone/stone_0.png'),
+    #         1 : pygame.image.load(self.proj_path + 'asset/stone/stone_a.png'),
+    #         2 : pygame.image.load(self.proj_path + 'asset/stone/stone_b.png'),
+    #         4 : pygame.image.load(self.proj_path + 'asset/stone/stone_1.png'),
+    #         8 : pygame.image.load(self.proj_path + 'asset/stone/stone_2.png'),
+    #         16 : pygame.image.load(self.proj_path + 'asset/stone/stone_3.png'),
+    #         32 : pygame.image.load(self.proj_path + 'asset/stone/stone_4.png'),
+    #         64 : pygame.image.load(self.proj_path + 'asset/stone/stone_5.png'),
+    #         128 : pygame.image.load(self.proj_path + 'asset/stone/stone_6.png'),
+    #         256 : pygame.image.load(self.proj_path + 'asset/stone/stone_7.png'),
+    #         512 : pygame.image.load(self.proj_path + 'asset/stone/stone_8.png'),
+    #         1024 : pygame.image.load(self.proj_path + 'asset/stone/stone_9.png'),
+    #         2048 : pygame.image.load(self.proj_path + 'asset/stone/stone_10.png'),
+    #         4096 : pygame.image.load(self.proj_path + 'asset/stone/stone_11.png'),
+    #         8192 : pygame.image.load(self.proj_path + 'asset/stone/stone_12.png'),
+    #         16384 : pygame.image.load(self.proj_path + 'asset/stone/stone_13.png'),           
+    #         32768 : pygame.image.load(self.proj_path + 'asset/stone/stone_14.png')       
+    #     }
 
-        self.castle_textures = {
-            1 : pygame.image.load(self.proj_path + 'asset/castle/castle_0.png'),
-            2 : pygame.image.load(self.proj_path + 'asset/castle/castle_0b.png'),
-            4 : pygame.image.load(self.proj_path + 'asset/castle/castle_1.png'),
-            8 : pygame.image.load(self.proj_path + 'asset/castle/castle_1b.png'),
-            16 : pygame.image.load(self.proj_path + 'asset/castle/castle_2.png'),
-            32 : pygame.image.load(self.proj_path + 'asset/castle/castle_2b.png'),
-            64 : pygame.image.load(self.proj_path + 'asset/castle/castle_3.png'),
-            128 : pygame.image.load(self.proj_path + 'asset/castle/castle_3b.png'),
-            256 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
-            512 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
-            1024 : pygame.image.load(self.proj_path + 'asset/castle/castle_x1.png'),
-            2048 : pygame.image.load(self.proj_path + 'asset/castle/castle_x2.png'),
-            4096 : pygame.image.load(self.proj_path + 'asset/castle/castle_x3.png'),
-            8192 : pygame.image.load(self.proj_path + 'asset/castle/castle_x4.png'),
-            16384 : pygame.image.load(self.proj_path + 'asset/castle/castle_x5.png'),           
-            32768 : pygame.image.load(self.proj_path + 'asset/castle/castle_x6.png')       
-        }
+    #     self.castle_textures = {
+    #         1 : pygame.image.load(self.proj_path + 'asset/castle/castle_0.png'),
+    #         2 : pygame.image.load(self.proj_path + 'asset/castle/castle_0b.png'),
+    #         4 : pygame.image.load(self.proj_path + 'asset/castle/castle_1.png'),
+    #         8 : pygame.image.load(self.proj_path + 'asset/castle/castle_1b.png'),
+    #         16 : pygame.image.load(self.proj_path + 'asset/castle/castle_2.png'),
+    #         32 : pygame.image.load(self.proj_path + 'asset/castle/castle_2b.png'),
+    #         64 : pygame.image.load(self.proj_path + 'asset/castle/castle_3.png'),
+    #         128 : pygame.image.load(self.proj_path + 'asset/castle/castle_3b.png'),
+    #         256 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
+    #         512 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
+    #         1024 : pygame.image.load(self.proj_path + 'asset/castle/castle_x1.png'),
+    #         2048 : pygame.image.load(self.proj_path + 'asset/castle/castle_x2.png'),
+    #         4096 : pygame.image.load(self.proj_path + 'asset/castle/castle_x3.png'),
+    #         8192 : pygame.image.load(self.proj_path + 'asset/castle/castle_x4.png'),
+    #         16384 : pygame.image.load(self.proj_path + 'asset/castle/castle_x5.png'),           
+    #         32768 : pygame.image.load(self.proj_path + 'asset/castle/castle_x6.png')       
+    #     }
 
     def __resize_texture(self):
         for k,v in self.textures.items():
