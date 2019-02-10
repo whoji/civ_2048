@@ -31,7 +31,7 @@ class Flags(object):
         self.window_w = 800
         self.window_h = 600
         self.tile_size = 50
-        self.map_rows = 5
+        self.map_rows = 6
         self.map_cols = 5
         self.status_bar_size = 60
         self.board_offset_x, self.board_offset_y = self.__calculate_board_offset()
@@ -55,6 +55,7 @@ class Flags(object):
             self.board_offset_y-self.board_frame_px, 
             self.map_cols*self.tile_size+2*self.board_frame_px, 
             self.map_rows*self.tile_size+2*self.board_frame_px)
+        self.board_origin = self.board_rect[:2]
         self.init_board_blocks = 2
         self.block_font_center = True
         self.block_font_size = int(self.tile_size / 2)
@@ -66,7 +67,7 @@ class Flags(object):
         self.block_font_size_perc = (1, 1, 0.9, 0.8, 0.5, 0.5, 0.5) 
 
         # status bar
-        self.display_castle = True
+        self.display_castle = False
         self.castle_icon_px  = 30
         self.castle_icon_gap = 1
         self.big_castle_icon = True
@@ -82,6 +83,19 @@ class Flags(object):
         self.star_tile_color = self.red
         self.star_tile_frame_color = self.red
 
+        # star system 2.0 (constellation)
+        self.if_stars = True
+        self.stars_pos = {
+            'throne':       (5,2),
+            'production':   (5,0),
+            'science':      (5,1),
+            'culture':      (5,3),
+            'religion':     (5,4),
+        }
+        self.stars_tile_color =  {}
+        self.stars_tile_frame_color = {}
+
+
         # game flow control
         self.win_condition_block = self.__calculate_win_block()
         self.milestone_mode = True
@@ -94,6 +108,9 @@ class Flags(object):
         # load texture
         #self.__get_textures()
         #self.__resize_texture()
+
+        # load the colors
+        self.__get_tile_colors()
 
         # load sound effects
         #self.__get_sound()
@@ -124,45 +141,68 @@ class Flags(object):
             self.map_rows * self.tile_size / 2)
         return offset_x, offset_y
 
-    # def __get_textures(self):
-    #     self.textures = {
-    #         -1 : pygame.image.load(self.proj_path + 'asset/stone/stone_0.png'),
-    #         1 : pygame.image.load(self.proj_path + 'asset/stone/stone_a.png'),
-    #         2 : pygame.image.load(self.proj_path + 'asset/stone/stone_b.png'),
-    #         4 : pygame.image.load(self.proj_path + 'asset/stone/stone_1.png'),
-    #         8 : pygame.image.load(self.proj_path + 'asset/stone/stone_2.png'),
-    #         16 : pygame.image.load(self.proj_path + 'asset/stone/stone_3.png'),
-    #         32 : pygame.image.load(self.proj_path + 'asset/stone/stone_4.png'),
-    #         64 : pygame.image.load(self.proj_path + 'asset/stone/stone_5.png'),
-    #         128 : pygame.image.load(self.proj_path + 'asset/stone/stone_6.png'),
-    #         256 : pygame.image.load(self.proj_path + 'asset/stone/stone_7.png'),
-    #         512 : pygame.image.load(self.proj_path + 'asset/stone/stone_8.png'),
-    #         1024 : pygame.image.load(self.proj_path + 'asset/stone/stone_9.png'),
-    #         2048 : pygame.image.load(self.proj_path + 'asset/stone/stone_10.png'),
-    #         4096 : pygame.image.load(self.proj_path + 'asset/stone/stone_11.png'),
-    #         8192 : pygame.image.load(self.proj_path + 'asset/stone/stone_12.png'),
-    #         16384 : pygame.image.load(self.proj_path + 'asset/stone/stone_13.png'),           
-    #         32768 : pygame.image.load(self.proj_path + 'asset/stone/stone_14.png')       
-    #     }
+    def __get_textures(self):
+        self.build_textures = {
+            'throne' :      pygame.image.load(self.proj_path + 'asset/castle/castle_0.png'),
+            'production' :  pygame.image.load(self.proj_path + 'asset/castle/castle_0b.png'),
+            'science' :     pygame.image.load(self.proj_path + 'asset/castle/castle_1b.png'),
+            'culture' :     pygame.image.load(self.proj_path + 'asset/castle/castle_1.png'),
+            'religion' :    pygame.image.load(self.proj_path + 'asset/castle/castle_2.png')
+        }
 
-    #     self.castle_textures = {
-    #         1 : pygame.image.load(self.proj_path + 'asset/castle/castle_0.png'),
-    #         2 : pygame.image.load(self.proj_path + 'asset/castle/castle_0b.png'),
-    #         4 : pygame.image.load(self.proj_path + 'asset/castle/castle_1.png'),
-    #         8 : pygame.image.load(self.proj_path + 'asset/castle/castle_1b.png'),
-    #         16 : pygame.image.load(self.proj_path + 'asset/castle/castle_2.png'),
-    #         32 : pygame.image.load(self.proj_path + 'asset/castle/castle_2b.png'),
-    #         64 : pygame.image.load(self.proj_path + 'asset/castle/castle_3.png'),
-    #         128 : pygame.image.load(self.proj_path + 'asset/castle/castle_3b.png'),
-    #         256 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
-    #         512 : pygame.image.load(self.proj_path + 'asset/castle/castle_x0.png'),
-    #         1024 : pygame.image.load(self.proj_path + 'asset/castle/castle_x1.png'),
-    #         2048 : pygame.image.load(self.proj_path + 'asset/castle/castle_x2.png'),
-    #         4096 : pygame.image.load(self.proj_path + 'asset/castle/castle_x3.png'),
-    #         8192 : pygame.image.load(self.proj_path + 'asset/castle/castle_x4.png'),
-    #         16384 : pygame.image.load(self.proj_path + 'asset/castle/castle_x5.png'),           
-    #         32768 : pygame.image.load(self.proj_path + 'asset/castle/castle_x6.png')       
-    #     }
+
+    def __get_tile_colors(self):
+        self.tile_color = {
+            0   : self.white,
+            1   : (250,120,120),
+            2   : (250,110,110),
+            4   : (250,100,100),
+            8   : (250,90,90),
+            16  : (250,80,80),
+            32  : (250,70,70),
+            64  : (250,60,60),
+            128 : (250,50,50),
+            256 : (250,40,40),
+            512 : (250,30,30),
+            1024: (250,20,20),
+            2048: (250,15,15),
+            4096: (250,10,10),
+            8192: (250, 5, 5),
+            # now the negative ones
+            -1   : (120,250,120),
+            -2   : (110,250,110),
+            -4   : (100,250,100),
+            -8   : (90,250,90),
+            -16  : (80,250,80),
+            -32  : (70,250,70),
+            -64  : (60,250,60),
+            -128 : (50,250,50),
+            -256 : (40,250,40),
+            -512 : (30,250,30),
+            -1024: (20,250,20),
+            -2048: (15,250,15),
+            -4096: (10,250,10),
+            -8192: ( 5,250, 5)
+        }
+
+        self.tile_color_1 = {
+            0   : self.white,
+            1   : (150,150,90),
+            2   : (220,180,45),
+            4   : (250,220, 0),
+            8   : (150,120, 0),
+            16  : (150, 90, 0),
+            32  : self.orange,
+            64 : (250, 90, 0),
+            128 : (250, 50, 0),
+            256 : self.red,
+            512: (250, 20,20),
+            1024: self.blue,
+            2048: self.blue2,
+            4096: self.grey1,
+            8192: self.grey2
+        }
+
 
     def __resize_texture(self):
         for k,v in self.textures.items():
