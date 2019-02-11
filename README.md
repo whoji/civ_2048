@@ -21,7 +21,7 @@ python ./src/main.py
 * Bring up the option (help) menu: <kbd>F1</kbd> or <kbd>Esc</kbd>
 
 ### TODO
-* objectify the main.py
+* make a render class
 * somehow merge mover and board
 * use .convert()
 * better update logic (dirty bag)
@@ -32,6 +32,9 @@ python ./src/main.py
 * win condition
 * lose condition
 * penalty condition
+
+### Off TODO list
+* `[2019-2-10]` objectify the main.py
 
 ### Contact
 whoji (whoji@null.net)
