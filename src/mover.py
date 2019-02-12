@@ -105,7 +105,7 @@ class Mover(object):
         assert 0 <= i < F.map_rows
         assert 0 <= j < F.map_rows
     
-        if F.if_star and (i,j) == F.star_pos:
+        if F.if_stars and (i,j) in F.stars_pos.values():
             return i, j, False
         elif b[i][j] == 0:
             return None, None, None

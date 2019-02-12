@@ -97,8 +97,9 @@ class Board(object):
             self.spawn_block()
 
         # add the star
-        if F.if_star:
-            self.add_to_board(F.star_pos, 1)
+        if F.if_stars:
+            for star_pos in F.stars_pos.values():
+                self.add_to_board(star_pos, 1)
 
     def update_board(self, action = "up"):
         # 0. bak the old one
@@ -182,7 +183,7 @@ class Board(object):
         assert 0 <= i < F.map_rows
         assert 0 <= j < F.map_rows
     
-        if F.if_star and (i,j) == F.star_pos:
+        if F.if_stars and (i,j) in F.stars_pos.values():
             return 0
         elif b[i][j] == 0:
             return 0
@@ -256,10 +257,10 @@ class Board(object):
 
     #@staticmethod
     def merge_block(self, b, from_pos, to_pos):
-        if F.if_star and from_pos == F.star_pos:
+        if F.if_stars and from_pos in F.stars_pos.values():
             return 0
         else:
-            if to_pos == F.star_pos:
+            if to_pos in F.stars_pos.values():
                 #print(str(from_pos) + " --> " + str(to_pos))
                 self.if_upgraded = True
             b[to_pos[0]][to_pos[1]] += b[from_pos[0]][from_pos[1]]
@@ -286,9 +287,11 @@ class Board(object):
     def get_valid_spawn_pos(self):
         m = F.map_rows
         n = F.map_cols
+        # return [(i,j) for i in range(m) for j in range(n) 
+        #     if self.board[i][j] == 0 and (i == 0 or 
+        #         j == 0 or i == m-1 or j == n-1)]
         return [(i,j) for i in range(m) for j in range(n) 
-            if self.board[i][j] == 0 and (i == 0 or 
-                j == 0 or i == m-1 or j == n-1)]
+            if self.board[i][j] == 0 and (i,j) not in F.stars_pos.values()]
 
     def check_gg(self):
         # first backup sound monitor
@@ -306,13 +309,15 @@ class Board(object):
         return True
 
     def check_win_condition(self):
-        if F.if_star:
-            if self.board[F.star_pos[0]][F.star_pos[1]] == F.win_condition_block:
-                return True
-        else:
-            for r in self.board:
-                if F.win_condition_block in r:
-                    return True
+        # if F.if_star:
+        #     if self.board[F.star_pos[0]][F.star_pos[1]] == F.win_condition_block:
+        #         return True
+        # else:
+        #     for r in self.board:
+        #         if F.win_condition_block in r:
+        #             return True
+        # return False
+
         return False
 
     def resest_event_monitor(self):

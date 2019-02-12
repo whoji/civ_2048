@@ -207,11 +207,12 @@ class CivGame(object):
                     F.tile_size-2*F.board_frame_px, 
                     F.tile_size-2*F.board_frame_px))
         
-        pygame.draw.rect(DISPLAYSUR, F.star_tile_color,(
-                F.star_pos[1]*F.tile_size+F.board_offset_x-F.board_frame_px,
-                F.star_pos[0]*F.tile_size+F.board_offset_y-F.board_frame_px, 
-                F.tile_size+2*F.board_frame_px, 
-                F.tile_size+2*F.board_frame_px))
+        for star_pos in F.stars_pos.values():
+            pygame.draw.rect(DISPLAYSUR, F.star_tile_color,(
+                    star_pos[1]*F.tile_size+F.board_offset_x-F.board_frame_px,
+                    star_pos[0]*F.tile_size+F.board_offset_y-F.board_frame_px, 
+                    F.tile_size+2*F.board_frame_px, 
+                    F.tile_size+2*F.board_frame_px))
 
         # render the moving blocks
         if controller.game_status == 21:
@@ -226,7 +227,7 @@ class CivGame(object):
                             moving_tile_rect = moving_tile_pos + (F.tile_size-2*F.board_frame_px, 
                                 F.tile_size -2*F.board_frame_px)
                             tile_color = F.tile_color[board.prev_board[row][col]]                        
-                            if (row, col) == F.star_pos:
+                            if (row, col) in F.stars_pos.values():
                                 # DISPLAYSUR.blit(F.castle_textures[board.prev_board[row][col]], moving_tile_pos)
                                 pygame.draw.rect(DISPLAYSUR, tile_color, moving_tile_rect)
                             else:
@@ -242,11 +243,11 @@ class CivGame(object):
             else:
                 controller.game_status = 2
 
-        # render the board
+        # render the board (with blocks)
         if controller.game_status != 21:
             for row in range(F.map_rows):
                 for col in range(F.map_cols):
-                    if (row, col) == F.star_pos:
+                    if (row, col) in F.stars_pos.values():
                         # DISPLAYSUR.blit(F.castle_textures[board.board[row][col]],
                         #     (col*F.tile_size+F.board_offset_x+F.board_frame_px, 
                         #         row*F.tile_size+F.board_offset_y+F.board_frame_px))

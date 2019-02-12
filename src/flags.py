@@ -30,7 +30,7 @@ class Flags(object):
         # size and pos conf (general and menu)
         self.window_w = 800
         self.window_h = 600
-        self.tile_size = 50
+        self.tile_size = 70
         self.map_rows = 6
         self.map_cols = 5
         self.status_bar_size = 60
@@ -81,17 +81,24 @@ class Flags(object):
         # star 
         self.if_star = True
         self.star_pos = (2,2)
-        self.star_tile_color = self.red
-        self.star_tile_frame_color = self.red
+        self.star_tile_color = self.blue
+        self.star_tile_frame_color = self.blue
 
         # star system 2.0 (constellation)
         self.if_stars = True
         self.stars_pos = {
+            # the buildings
             'throne':       (5,2),
             'production':   (5,0),
             'science':      (5,1),
             'culture':      (5,3),
             'religion':     (5,4),
+            # now the war units
+            'mt0':          (0,0),
+            'mt1':          (0,1),
+            'mt2':          (0,2),
+            'mt3':          (0,3),
+            'mt4':          (0,4)
         }
         self.stars_tile_color =  {}
         self.stars_tile_frame_color = {}
