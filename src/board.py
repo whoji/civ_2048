@@ -3,9 +3,62 @@ import random
 
 from pygame.locals import *
 from flags import F
-# TODO
-# from combine import Combiner
-# from move import Mover
+
+class Block():
+    '''
+    TODO: merge this Block() from mover. make it a sprite
+    '''
+    def __init__(self, x, y, i, j, val=2):
+        self.x = x          # pixel pos
+        self.y = y          # pixel pos
+        self.i = i          # tile pos
+        self.j = j          # tile pos
+        self.val = val      # face value
+        self.status = 'stationary'
+        self.if_disappear = False
+        self.dest_i = None
+        self.dest_j = None
+
+        self.bg_color = F.white
+        self.image = pygame.Surface([F.tile_size, F.tile_size])
+        self.image.fill(self.bg_color)
+        self.image.set_colorkey(F.white)
+        self.rect = self.image.get_rect()
+
+    def draw(self):
+        pygame.draw.rect(self.image, self.color, [self.x, self.y, F.tile_size, F.tile_size])
+        # TODO: add the text
+
+    def get_speed(self):
+        #import pdb; pdb.set_trace()
+        #print("[%d,%d] to ..." % (self.x,self.y))
+        print("[%d,%d] to [%d,%d]" % (self.x,self.y,self.dest_x,self.dest_y))
+        speed_x = (self.dest_x - self.x) * 1.0 / F.move_frame
+        speed_y = (self.dest_y - self.y) * 1.0 / F.move_frame
+        return speed_x, speed_y
+
+    def move(self):
+        self.x += self.dx
+        self.y += self.dy
+
+    def move_to_tile(self, pos):
+        self.i, self.j = pos
+        self.dest_x, self.dest_y = self.ij_to_xy(*pos)
+        self.dx, self.dy = get_speed()
+        self.status = "moving"
+
+    def __repr__(self):
+        return "%d@(%d,%d)" % (self.val, self.x, self.y)
+
+    @staticmethod
+    def ij_to_xy(i,j):
+        '''
+        convert tile coordinates to pixel value coordinates
+        '''
+        x = F.board_pos[0] + i * F.tile_size
+        y = F.board_pos[1] + j * F.tile_size
+        return x, y
+
 
 class Board(object):
 

@@ -56,6 +56,7 @@ class Flags(object):
             self.map_cols*self.tile_size+2*self.board_frame_px, 
             self.map_rows*self.tile_size+2*self.board_frame_px)
         self.board_origin = self.board_rect[:2]
+        self.board_pos = self.board_rect[:2]
         self.init_board_blocks = 2
         self.block_font_center = True
         self.block_font_size = int(self.tile_size / 2)

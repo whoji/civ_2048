@@ -95,6 +95,41 @@ class CivGame(object):
             # end of each frame
             # ===================================
 
+    def event_handler(self):
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                self.controller.quit_game()
+            elif event.type == KEYDOWN:
+                action = Action.eventkey_to_action(event.key)
+                if action in ['up','down','right','left']:
+                    self.sound_player.play_action_sound()
+                    if_moved = self.board.update_board(action)
+
+                    if if_moved:
+                        print("board updated !!")
+                        print(self.board)
+                        self.mover = Mover(self.board.prev_board, action)
+                        self.controller.game_status = 21
+                        self.status_bar.update_status()
+
+                # can press q to exit the game only in debug_mode
+                elif event.unicode == 'q' and F.debug_mod:
+                    self.controller.quit_game()
+
+                elif event.key == pygame.K_F1 or event.key == pygame.K_ESCAPE:
+                    self.controller.call_option()
+
+                elif F.debug_mod:
+                    if event.key == pygame.K_F4: # Four for Die (si3)
+                        self.board.if_gg = True
+                    elif event.key == pygame.K_F5: # Five (V) for Victory
+                        self.board.if_win = True
+
+                else:
+                    print("Invalid key input: <" + str(event.key) +">; Doing nothing...")
+            else:
+                pass
+                #print("other event.type: " + str(event.type))
 
 
     def game_flow_control(self):
@@ -131,40 +166,7 @@ class CivGame(object):
         # playing the game (at board view)
         elif controller.game_status == 2:
 
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    controller.quit_game()
-                elif event.type == KEYDOWN:
-                    action = Action.eventkey_to_action(event.key)
-                    if action in ['up','down','right','left']:
-                        sound_player.play_action_sound()
-                        if_moved = board.update_board(action)
-
-                        if if_moved:
-                            print("board updated !!")
-                            print(board)
-                            self.mover = Mover(board.prev_board, action)
-                            controller.game_status = 21
-                            status_bar.update_status()
-
-                    # can press q to exit the game only in debug_mode
-                    elif event.unicode == 'q' and F.debug_mod:
-                        controller.quit_game()
-
-                    elif event.key == pygame.K_F1 or event.key == pygame.K_ESCAPE:
-                        controller.call_option()
-
-                    elif F.debug_mod:
-                        if event.key == pygame.K_F4: # Four for Die (si3)
-                            board.if_gg = True
-                        elif event.key == pygame.K_F5: # Five (V) for Victory
-                            board.if_win = True
-
-                    else:
-                        print("Invalid key input: <" + str(event.key) +">; Doing nothing...")
-                else:
-                    pass
-                    #print("other event.type: " + str(event.type))
+            self.event_handler()
 
             if board.if_gg:
                 controller.lose_game()
