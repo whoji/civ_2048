@@ -4,39 +4,102 @@ import random
 from pygame.locals import *
 from flags import F
 
+
 class Block():
-    def __init__(self, x, y, val, dest_i, dest_j, if_disappear):
-        self.x = x
-        self.y = y
-        self.val = val
-        self.dest_i = dest_i
-        self.dest_j = dest_j
-        self.if_disappear = if_disappear
-        self.speed_x, self.speed_y = self.get_speed()
+    '''
+    TODO: merge this Block() from mover. make it a sprite
+    '''
+    def __init__(self, i, j, x=0, y=0, val=2):
+        self.x = x          # pixel pos
+        self.y = y          # pixel pos
+        self.i = i          # tile pos
+        self.j = j          # tile pos
+        self.val = val      # face value
+        self.status = 'stationary'
+        self.if_disappear = False
+        self.dest_i = None
+        self.dest_j = None
+        self.dest_x = None
+        self.dest_y = None
+        self.dx, self.dy = None, None
+
+        self.bg_color = F.tile_color[val]
+        self.image = pygame.Surface([F.tile_size, F.tile_size])
+        self.image.fill(self.bg_color)
+        self.image.set_colorkey(F.white)
+        self.rect = self.image.get_rect()
+        if self.x == 0 and self.y == 0:
+            self.get_static_px_pos()
+
+    def draw(self, DISPLAYSUR, font, gen_ui):
+        o = F.board_frame_px
+        moving_tile_pos = [self.x+o, self.y+o]
+        moving_tile_rect = [self.x+o, self.y+o, F.tile_size-2*o, F.tile_size-2*o]
+        pygame.draw.rect(DISPLAYSUR, self.bg_color, moving_tile_rect)
+
+        # the text (number)
+        text_obj = gen_ui.generate_block_text_obj(font, self.val)
+        if F.block_font_center:
+            moving_tile_pos = Mover.center_text(text_obj,moving_tile_pos)
+        DISPLAYSUR.blit(text_obj,moving_tile_pos)
 
     def get_speed(self):
         #import pdb; pdb.set_trace()
         #print("[%d,%d] to ..." % (self.x,self.y))
-        print("[%d,%d] to [%d,%d]" % (self.x,self.y,self.dest_i,self.dest_j))
-        speed_x = (self.dest_i - self.x) * 1.0 / F.move_frame
-        speed_y = (self.dest_j - self.y) * 1.0 / F.move_frame
+        print("ii (%d,%d) to (%d,%d) | " % (self.i,self.j,self.dest_i,self.dest_j), end="")
+        print("px [%d,%d] to [%d,%d]" % (self.x,self.y,self.dest_x,self.dest_y))
+        speed_x = (self.dest_x - self.x) * 1.0 / F.move_frame
+        speed_y = (self.dest_y - self.y) * 1.0 / F.move_frame
         return speed_x, speed_y
 
+    def get_static_px_pos(self):
+        self.x = F.board_offset_x + self.j * F.tile_size
+        self.y = F.board_offset_y + self.i * F.tile_size
+
     def move(self):
-        self.x += self.speed_x
-        self.y += self.speed_y
+        self.x += self.dx
+        self.y += self.dy
 
     def __repr__(self):
         return "%d@(%d,%d)" % (self.val, self.x, self.y)
+
+    def set_dest(self, dest_i, dest_j):
+        self.dest_i = dest_i
+        self.dest_j = dest_j
+        self.dest_x, self.dest_y = self.ij_to_xy(dest_i, dest_j)
+        self.dx, self.dy = self.get_speed()
+
+    @staticmethod
+    def ij_to_xy(i,j):
+        '''
+        convert tile coordinates to pixel value coordinates
+        '''
+        x = F.board_pos[0] + j * F.tile_size
+        y = F.board_pos[1] + i * F.tile_size
+        return x, y
+
 
 class Mover(object):
     """docstring for Mover"""
     def __init__(self, b, action):
         self.board = [r[:] for r in b]
+        self.board_px = None
         self.action = action
         self.total_moving_frames = F.move_frame
         self.remain_moving_frames = self.total_moving_frames
-        self.blocks = self.get_all_blocks_destination(self.board, self.action)
+        self.init_board_px()
+        self.get_all_blocks_destination(self.board, self.action)
+
+    def init_board_px(self):
+        self.board_px = [[None for w in range(F.map_cols)] 
+            for h in range (F.map_rows)]
+
+        # add Block according to self.board
+        for i in range(F.map_rows):
+            for j in range(F.map_cols):
+                if self.board[i][j] != 0:
+                    self.board_px[i][j] = Block(i=i,j=j,val=self.board[i][j])
+
 
     def render(self, DISPLAYSUR):
         pass
@@ -47,20 +110,19 @@ class Mover(object):
         n = F.map_cols
         for i in range(m):
             for j in range(n):
-                if isinstance(self.blocks[i][j], Block):
-                    self.blocks[i][j].move()
+                if isinstance(self.board_px[i][j], Block):
+                    self.board_px[i][j].move()
         self.remain_moving_frames -= 1
 
     def get_all_blocks_destination(self, b, action):
         m = F.map_rows
         n = F.map_cols
-        dest = [[0 for w in range(F.map_cols)] for h in range (F.map_rows)]
         if action == 'up':
             for i in range(m):
                 for j in range(n):
                     dest_i, dest_j, if_disappear = self.get_block_destination(b,i,j,action)
                     if dest_i is None: continue
-                    dest[i][j] = Block(i,j,b[i][j],dest_i, dest_j, if_disappear)
+                    self.board_px[i][j].set_dest(dest_i, dest_j)
                     v = b[i][j]
                     b[i][j] = 0
                     b[dest_i][dest_j] = v
@@ -69,7 +131,7 @@ class Mover(object):
                 for j in range(n):
                     dest_i, dest_j, if_disappear = self.get_block_destination(b,i,j,action)
                     if dest_i is None: continue
-                    dest[i][j] = Block(i,j,b[i][j],dest_i, dest_j, if_disappear)
+                    self.board_px[i][j].set_dest(dest_i, dest_j)
                     v = b[i][j]
                     b[i][j] = 0
                     b[dest_i][dest_j] = v
@@ -78,7 +140,7 @@ class Mover(object):
                 for j in reversed(range(n)):
                     dest_i, dest_j, if_disappear = self.get_block_destination(b,i,j,action)
                     if dest_i is None: continue
-                    dest[i][j] = Block(i,j,b[i][j],dest_i, dest_j, if_disappear)
+                    self.board_px[i][j].set_dest(dest_i, dest_j)
                     v = b[i][j]
                     b[i][j] = 0
                     b[dest_i][dest_j] = v
@@ -87,14 +149,13 @@ class Mover(object):
                 for j in range(n):
                     dest_i, dest_j, if_disappear = self.get_block_destination(b,i,j,action)
                     if dest_i is None: continue                    
-                    dest[i][j] = Block(i,j,b[i][j],dest_i, dest_j, if_disappear)
+                    self.board_px[i][j].set_dest(dest_i, dest_j)
                     v = b[i][j]
                     b[i][j] = 0
                     b[dest_i][dest_j] = v
         else:
             raise Exception("WTF is this action: %s" % str(action))
 
-        return dest
 
     def get_block_destination(self, b, i, j, action):
         '''

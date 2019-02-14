@@ -219,27 +219,9 @@ class CivGame(object):
             if mover.remain_moving_frames > 0:
                 mover.move_all()
                 for row in range(F.map_rows):
-                    for col in range(F.map_cols):                   
-                        if mover.blocks[row][col]:
-                            # the tile background
-                            moving_tile_pos = (mover.blocks[row][col].y*F.tile_size+F.board_offset_x+F.board_frame_px,
-                                 mover.blocks[row][col].x*F.tile_size+F.board_offset_y+F.board_frame_px)
-                            moving_tile_rect = moving_tile_pos + (F.tile_size-2*F.board_frame_px, 
-                                F.tile_size -2*F.board_frame_px)
-                            tile_color = F.tile_color[board.prev_board[row][col]]                        
-                            if (row, col) in F.stars_pos.values():
-                                # DISPLAYSUR.blit(F.castle_textures[board.prev_board[row][col]], moving_tile_pos)
-                                pygame.draw.rect(DISPLAYSUR, tile_color, moving_tile_rect)
-                            else:
-                                # DISPLAYSUR.blit(board.textures[board.prev_board[row][col]], moving_tile_pos)
-                                pygame.draw.rect(DISPLAYSUR, tile_color, moving_tile_rect)
-
-                            # the text (number)
-                            text_obj = gen_ui.generate_block_text_obj(self.GFONTS, board.prev_board[row][col])
-                            if F.block_font_center:
-                                moving_tile_pos = Mover.center_text(text_obj,moving_tile_pos)
-                            DISPLAYSUR.blit(text_obj,moving_tile_pos)
-
+                    for col in range(F.map_cols):
+                        if mover.board_px[row][col]:
+                            mover.board_px[row][col].draw(DISPLAYSUR, self.GFONTS, gen_ui)
             else:
                 controller.game_status = 2
 
