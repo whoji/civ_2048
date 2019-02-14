@@ -226,7 +226,7 @@ class Board(object):
 
     def spawn_block(self):
         valid_pos_candidates = self.get_valid_spawn_pos()
-        #print(valid_pos_candidates)
+        # print(valid_pos_candidates)
         if len(valid_pos_candidates):
             self.if_need_to_check_gg = True
         spawn_pos = random.choice(valid_pos_candidates)

@@ -236,7 +236,7 @@ class CivGame(object):
                         block_rect = (col*F.tile_size+F.board_origin[0]+F.board_frame_px, 
                             row*F.tile_size+F.board_origin[1]+F.board_frame_px, 
                             F.tile_size-F.board_frame_px*2,F.tile_size-F.board_frame_px*2)
-                        tile_color = F.tile_color[board.board[row][col]]
+                        tile_color = F.get_tile_color(row, col)
                         pygame.draw.rect(DISPLAYSUR, tile_color, block_rect)
                         continue
                     if board.board[row][col]:

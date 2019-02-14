@@ -7,7 +7,7 @@ class Flags(object):
 
     def __init__(self):
         self.game_name = 'Civ 2048'
-        self.game_ver = '0.01.apha.190207'
+        self.game_ver = '0.01.apha.190213'
         self.proj_path = './'
         self.save_path = './save/'
         self.debug_mod = True
@@ -21,9 +21,11 @@ class Flags(object):
         self.red = (250,50,50)
         self.blue = (50,50,250)
         self.blue2 = (2,39,99) # dark blue
+        self.blue3 = (50,150,250) # light blue
         self.green = (50, 200, 100)
         self.yellow = (200,200,50)
         self.orange = (255, 153, 58)
+        self.purple = (185, 66, 244)
         self.block_text_fg = self.white
         self.block_text_bg = None #self.black
 
@@ -31,8 +33,8 @@ class Flags(object):
         self.window_w = 800
         self.window_h = 600
         self.tile_size = 70
-        self.map_rows = 6
-        self.map_cols = 5
+        self.map_rows = 5
+        self.map_cols = 4
         self.status_bar_size = 60
         self.board_offset_x, self.board_offset_y = self.__calculate_board_offset()
         self.text_offset_x = 10
@@ -100,7 +102,31 @@ class Flags(object):
             'mt3':          (0,3),
             'mt4':          (0,4)
         }
-        self.stars_tile_color =  {}
+        self.stars_pos = {
+            # the buildings
+            'throne':       (4,0),
+            'production':   (4,1),
+            'science':      (4,2),
+            'culture':      (4,3),
+            # now the war units
+            'mt0':          (0,0),
+            'mt1':          (0,1),
+            'mt2':          (0,2),
+            'mt3':          (0,3)
+        }
+        self.stars_tile_color =  {
+            'throne':       self.yellow,
+            'production':   self.orange,
+            'science':      self.blue3,
+            'culture':      self.purple,
+            'religion':     self.white,
+            # now the war units
+            'mt0':          self.red,
+            'mt1':          self.red,
+            'mt2':          self.red,
+            'mt3':          self.red,
+            'mt4':          self.red
+        }
         self.stars_tile_frame_color = {}
 
 
@@ -221,6 +247,11 @@ class Flags(object):
             self.castle_textures[k] = pygame.transform.scale(
                 self.castle_textures[k], (self.tile_size-2*self.board_frame_px, 
                     self.tile_size-2*self.board_frame_px))
+
+    def get_tile_color(self, i, j):
+        for k,v in self.stars_pos.items():
+            if v == (i,j):
+                return self.stars_tile_color[k]
 
 
     # def __get_sound(self):

@@ -32,6 +32,7 @@ python ./src/main.py
 * win condition
 * lose condition
 * penalty condition
+* refine the merge logic
 
 ### Off TODO list
 * `[2019-2-10]` objectify the main.py
