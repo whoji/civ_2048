@@ -252,6 +252,7 @@ class Flags(object):
         for k,v in self.stars_pos.items():
             if v == (i,j):
                 return self.stars_tile_color[k]
+        return None
 
 
     # def __get_sound(self):

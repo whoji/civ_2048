@@ -35,7 +35,11 @@ class Block():
         o = F.board_frame_px
         moving_tile_pos = [self.x+o, self.y+o]
         moving_tile_rect = [self.x+o, self.y+o, F.tile_size-2*o, F.tile_size-2*o]
-        pygame.draw.rect(DISPLAYSUR, self.bg_color, moving_tile_rect)
+        if (self.i, self.j) in F.stars_pos.values():
+            tile_color = F.get_tile_color(self.i, self.j)
+        else:
+            tile_color = F.tile_color[self.val]
+        pygame.draw.rect(DISPLAYSUR, tile_color, moving_tile_rect)
 
         # the text (number)
         text_obj = gen_ui.generate_block_text_obj(font, self.val)
