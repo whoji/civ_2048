@@ -17,6 +17,8 @@ class Board(object):
         self.if_need_to_check_win = True
         self.if_gg = False
         self.if_win = False
+        self.stars = {} # tracking the stars values
+        self.stars_cap = {}
 
         # for event monitor
         self.if_moved = False
@@ -31,6 +33,7 @@ class Board(object):
         self.init_board()
         print("init board:")
         print(self)
+
 
     def __repr__(self):
         for r in self.board:
@@ -49,7 +52,10 @@ class Board(object):
         # add the star
         if F.if_stars:
             for star_pos in F.stars_pos.values():
-                self.add_to_board(star_pos, 1)
+                self.add_to_board(star_pos, F.star_init_value)
+            for name, pos in F.stars_pos.items():
+                self.stars[name] = self.board[pos[0]][pos[1]]
+            self.apply_stars_cap_logic()                
 
     def update_board(self, action = "up"):
         # 0. bak the old one
@@ -78,6 +84,12 @@ class Board(object):
         self.board = new_board
         #print("before spawn "+str(self))
         self.spawn_block()
+
+        # 4.5 update the tracker
+        if F.if_stars:
+            for name, pos in F.stars_pos.items():
+                self.stars[name] = self.board[pos[0]][pos[1]]
+            self.apply_stars_cap_logic()
 
         # 5. check GG condition
         if self.if_need_to_check_gg:
@@ -194,16 +206,31 @@ class Board(object):
 
         return b
 
-    #@staticmethod
-    def if_block_mergable(self, a,b):
-        '''
-        a: from
-        b: to
-        '''
-        if a == b and a != 0:
-            return True
+    # #@staticmethod
+    # def if_block_mergable(self, a,b):
+    #     '''
+    #     a: from
+    #     b: to
+    #     '''
+    #     if a == b and a != 0:
+    #         return True
+    #     else:
+    #         return False
+
+    def if_block_mergable(self, pos_f, pos_t):
+        if pos_t not in F.stars_pos.values():
+            val_f = self.board[pos_f[0]][pos_f[1]]
+            val_t = self.board[pos_t[0]][pos_t[1]]
+            if val_t == val_f and val_f != 0:
+                return True
+            else:
+                return False
         else:
-            return False
+            star_name = F.get_star_name(pos_t)
+            if val_t+val_f <= self.stars_cap[star_name]:
+                return True
+            else:
+                return False
 
     #@staticmethod
     def merge_block(self, b, from_pos, to_pos):
@@ -230,7 +257,7 @@ class Board(object):
         if len(valid_pos_candidates):
             self.if_need_to_check_gg = True
         spawn_pos = random.choice(valid_pos_candidates)
-        spawn_type = random.choice([1,2])
+        spawn_type = random.choice(F.random_spawn_types)
         self.add_to_board(spawn_pos, spawn_type)
         return 1
 
@@ -274,3 +301,7 @@ class Board(object):
         self.if_moved = False
         self.if_merged = False
         self.if_upgraded = False
+
+    def apply_stars_cap_logic(self):
+        raise NotImplementedError
+        

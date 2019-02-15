@@ -19,6 +19,10 @@ class StatusBar(object):
             self.star_score = 0
             self.top_star_score = 0
             self.milestone_str = ""
+        if F.if_stars:
+            #self.bd = {}
+            #self.mt = {}
+            self.stars = {}
 
     def update_status(self):
         self.moves = self.board.total_moves
@@ -29,6 +33,9 @@ class StatusBar(object):
             self.star_score = self.board.board[F.star_pos[0]][F.star_pos[1]]
             if self.star_score > self.top_star_score:
                 self.top_star_score = self.star_score
+        if F.if_stars:
+            for name, pos in F.stars_pos.items():
+                self.stars[name] = self.board.board[pos[0]][pos[1]]
 
     def render(self, DISPLAYSUR):    
         #bg = pygame.image.load(F.option_bg_img_path)

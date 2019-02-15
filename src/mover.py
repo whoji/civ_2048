@@ -31,6 +31,10 @@ class Block():
         if self.x == 0 and self.y == 0:
             self.get_static_px_pos()
 
+        # block / tile types
+        self.type = self.__get_type()
+        self.cap = self.__get_cap()
+
     def draw(self, DISPLAYSUR, font, gen_ui):
         o = F.board_frame_px
         moving_tile_pos = [self.x+o, self.y+o]
@@ -72,6 +76,15 @@ class Block():
         self.dest_j = dest_j
         self.dest_x, self.dest_y = self.ij_to_xy(dest_i, dest_j)
         self.dx, self.dy = self.get_speed()
+
+    def __get_type(self):
+        for name, pos in F.stars_pos.items():
+            if (self.i, self.j) == pos:
+                return name
+        return 0
+
+    def __get_cap(self):
+        return 99999999
 
     @staticmethod
     def ij_to_xy(i,j):

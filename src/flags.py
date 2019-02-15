@@ -33,7 +33,7 @@ class Flags(object):
         self.window_w = 800
         self.window_h = 600
         self.tile_size = 70
-        self.map_rows = 5
+        self.map_rows = 6
         self.map_cols = 4
         self.status_bar_size = 60
         self.board_offset_x, self.board_offset_y = self.__calculate_board_offset()
@@ -67,7 +67,9 @@ class Flags(object):
             int(self.tile_size / 4), # for 3 digit
             int(self.tile_size / 5) # for 4 digit
         ]
-        self.block_font_size_perc = (1, 1, 0.9, 0.8, 0.5, 0.5, 0.5) 
+        self.block_font_size_perc = (1, 1, 0.9, 0.8, 0.5, 0.5, 0.5)
+        self.random_spawn_types = [2]
+        self.star_init_value = 2
 
         # status bar
         self.display_castle = False
@@ -104,10 +106,10 @@ class Flags(object):
         }
         self.stars_pos = {
             # the buildings
-            'throne':       (4,0),
-            'production':   (4,1),
-            'science':      (4,2),
-            'culture':      (4,3),
+            'throne':       (5,0),
+            'production':   (5,1),
+            'science':      (5,2),
+            'culture':      (5,3),
             # now the war units
             'mt0':          (0,0),
             'mt1':          (0,1),
@@ -115,6 +117,7 @@ class Flags(object):
             'mt3':          (0,3)
         }
         self.stars_tile_color =  {
+            # the buildings
             'throne':       self.yellow,
             'production':   self.orange,
             'science':      self.blue3,
@@ -128,6 +131,34 @@ class Flags(object):
             'mt4':          self.red
         }
         self.stars_tile_frame_color = {}
+        self.stars_tile_init_cap = {
+            # the buildings
+            'throne':       9999999,
+            'production':   9999999,
+            'science':      9999999,
+            'culture':      9999999,
+            'religion':     9999999,
+            # now the war units
+            'mt0':          9999999,
+            'mt1':          9999999,
+            'mt2':          9999999,
+            'mt3':          9999999,
+            'mt4':          9999999
+        }
+        self.stars_tile_cap_lookup = {
+            # the buildings
+            'throne':       None,
+            'production':   'throne',
+            'science':      'throne',
+            'culture':      'throne',
+            'religion':     'throne',
+            # now the war units
+            'mt0':          'science',
+            'mt1':          'science',
+            'mt2':          'science',
+            'mt3':          'science',
+            'mt4':          'science'
+        }
 
 
         # game flow control
@@ -253,6 +284,13 @@ class Flags(object):
             if v == (i,j):
                 return self.stars_tile_color[k]
         return None
+
+    def get_star_name(self, pos):
+        for name, star_pos in self.stars_pos.items():
+            if star_pos == pos:
+                return name
+        return None
+
 
 
     # def __get_sound(self):
