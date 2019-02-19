@@ -106,10 +106,10 @@ class Flags(object):
         }
         self.stars_pos = {
             # the buildings
-            'throne':       (5,0),
+            'throne':       (5,2),
             'production':   (5,1),
-            'science':      (5,2),
-            'culture':      (5,3),
+            'science':      (5,3),
+            'culture':      (5,0),
             # now the war units
             'mt0':          (0,0),
             'mt1':          (0,1),

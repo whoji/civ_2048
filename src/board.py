@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 from pygame.locals import *
 from flags import F
@@ -45,10 +46,6 @@ class Board(object):
         self.board = [[0 for w in range(F.map_cols)] 
             for h in range (F.map_rows)]
 
-        # spawn some random blocks
-        for _ in range(F.init_board_blocks):
-            self.spawn_block()
-
         # add the star
         if F.if_stars:
             for star_pos in F.stars_pos.values():
@@ -56,6 +53,11 @@ class Board(object):
             for name, pos in F.stars_pos.items():
                 self.stars[name] = self.board[pos[0]][pos[1]]
             self.apply_stars_cap_logic()                
+
+        # spawn some random blocks
+        for _ in range(F.init_board_blocks):
+            self.spawn_block()
+
 
     def update_board(self, action = "up"):
         # 0. bak the old one
@@ -176,28 +178,32 @@ class Board(object):
         if action == 'up':
             for i in range(1,m):
                 for j in range(n):
-                    if self.if_block_mergable(b[i][j],b[i-1][j]):
+                    # if self.if_block_mergable(b[i][j],b[i-1][j]):
+                    if self.if_block_mergable(b, (i,j),(i-1,j)):
                         #b[i-1][j] += b[i][j]
                         #b[i][j] = 0
                         self.merge_block(b, (i,j), (i-1,j) )
         elif action == 'down':
             for i in reversed(range(m-1)):
                 for j in range(n):
-                    if self.if_block_mergable(b[i][j],b[i+1][j]):
+                    # if self.if_block_mergable(b[i][j],b[i+1][j]):
+                    if self.if_block_mergable(b, (i,j),(i+1,j)):
                         #b[i+1][j] += b[i][j]
                         #b[i][j] = 0                    
                         self.merge_block(b, (i,j), (i+1,j) )
         elif action == 'right':
             for i in range(m):
                 for j in reversed(range(n-1)):
-                    if self.if_block_mergable(b[i][j],b[i][j+1]):
+                    # if self.if_block_mergable(b[i][j],b[i][j+1]):
+                    if self.if_block_mergable(b, (i,j),(i,j+1)):
                         #b[i][j+1] += b[i][j]
                         #b[i][j] = 0
                         self.merge_block(b, (i,j), (i,j+1) )
         elif action == 'left':
             for i in range(m):
                 for j in range(1,n):
-                    if self.if_block_mergable(b[i][j],b[i][j-1]):
+                    # if self.if_block_mergable(b[i][j],b[i][j-1]):
+                    if self.if_block_mergable(b, (i,j),(i,j-1)):
                         #b[i][j-1] += b[i][j]
                         #b[i][j] = 0
                         self.merge_block(b, (i,j), (i,j-1) )                        
@@ -217,17 +223,18 @@ class Board(object):
     #     else:
     #         return False
 
-    def if_block_mergable(self, pos_f, pos_t):
+    def if_block_mergable(self, b, pos_f, pos_t):
+        val_f = b[pos_f[0]][pos_f[1]]
+        val_t = b[pos_t[0]][pos_t[1]]
         if pos_t not in F.stars_pos.values():
-            val_f = self.board[pos_f[0]][pos_f[1]]
-            val_t = self.board[pos_t[0]][pos_t[1]]
             if val_t == val_f and val_f != 0:
                 return True
             else:
                 return False
         else:
             star_name = F.get_star_name(pos_t)
-            if val_t+val_f <= self.stars_cap[star_name]:
+            if val_t+val_f <= self.stars_cap[star_name] and\
+            val_t == val_f and val_f != 0:
                 return True
             else:
                 return False
@@ -257,7 +264,8 @@ class Board(object):
         if len(valid_pos_candidates):
             self.if_need_to_check_gg = True
         spawn_pos = random.choice(valid_pos_candidates)
-        spawn_type = random.choice(F.random_spawn_types)
+        #spawn_type = random.choice(F.random_spawn_types)
+        spawn_type = random.choice(self.get_spawn_types())
         self.add_to_board(spawn_pos, spawn_type)
         return 1
 
@@ -303,5 +311,37 @@ class Board(object):
         self.if_upgraded = False
 
     def apply_stars_cap_logic(self):
-        raise NotImplementedError
+        for k, v in F.stars_tile_cap_lookup.items():
+            if v is None:
+                self.stars_cap[k] = 9999999
+            else:
+                self.stars_cap[k] = self.stars[v]
+
+    def get_spawn_types(self):
+        # ret = [2]
+        # if self.stars['production'] >= 16:
+        #     ret = [2,4]
+        # if self.stars['production'] >= 32:
+        #     ret =  [2,4,8]
+        # if self.stars['production'] == 64:
+        #     ret =  [2,4,8,16]
+        # if self.stars['production'] == 128:
+        #     ret =  [2,4,8,16,32]
+        # if self.stars['production'] == 256:
+        #     ret =  [4,8,16,32,64]
+        # if self.stars['production'] == 512:
+        #     ret =  [8,16,32,64,128]
+        # if self.stars['production'] == 1024:
+        #     ret =  [16,32,64,128,256]
+        # return ret
+
+        pv = self.stars['production']
+        if pv < 16:
+            return [2]
+        else:
+            ret = [2**i for i in range(1,int(math.log2(pv)-2))]
+            if len(ret) > 5:
+                ret = ret[-5:]
+            print(ret)
+            return ret
         

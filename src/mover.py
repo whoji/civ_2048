@@ -98,12 +98,13 @@ class Block():
 
 class Mover(object):
     """docstring for Mover"""
-    def __init__(self, b, action):
+    def __init__(self, b, action, stars_cap):
         self.board = [r[:] for r in b]
         self.board_px = None
         self.action = action
         self.total_moving_frames = F.move_frame
         self.remain_moving_frames = self.total_moving_frames
+        self.stars_cap = stars_cap
         self.init_board_px()
         self.get_all_blocks_destination(self.board, self.action)
 
@@ -192,11 +193,12 @@ class Mover(object):
             if_disappear = False
 
             if action == 'up':
+                cap = self.get_target_cap(pos=(i-1,j))
                 while i >= 1:
                     if b[i-1][j] == 0: 
                         if_disappear = False
                         i -= 1
-                    elif b[i-1][j] == v:
+                    elif b[i-1][j] == v and b[i-1][j] + v <= cap:
                         if_disappear = True
                         i -= 1
                         break
@@ -205,11 +207,12 @@ class Mover(object):
                 return i, j, if_disappear
 
             elif action == 'down':
+                cap = self.get_target_cap(pos=(i+1,j))
                 while i < F.map_rows - 1:
                     if b[i+1][j] == 0: 
                         if_disappear = False
                         i += 1
-                    elif b[i+1][j] == v:
+                    elif b[i+1][j] == v and b[i+1][j] + v <= cap:
                         if_disappear = True
                         i += 1
                         break
@@ -218,11 +221,12 @@ class Mover(object):
                 return i, j, if_disappear
 
             elif action == 'left':
+                cap = self.get_target_cap(pos=(i,j-1))
                 while j >= 1:
                     if b[i][j-1] == 0: 
                         if_disappear = False
                         j -= 1
-                    elif b[i][j-1] == v:
+                    elif b[i][j-1] == v and b[i][j-1] + v <= cap:
                         if_disappear = True
                         j -= 1
                         break
@@ -231,11 +235,12 @@ class Mover(object):
                 return i, j, if_disappear
 
             elif action == 'right':
+                cap = self.get_target_cap(pos=(i,j+1))
                 while j < F.map_cols - 1:
                     if b[i][j+1] == 0: 
                         if_disappear = False
                         j += 1
-                    elif b[i][j+1] == v:
+                    elif b[i][j+1] == v and b[i][j+1] + v <= cap:
                         if_disappear = True
                         j += 1
                         break
@@ -249,6 +254,12 @@ class Mover(object):
 
     def get_coordinates(self):
         pass
+
+    def get_target_cap(self, pos):
+        if pos in  F.stars_pos.values():
+            return self.stars_cap[F.get_star_name(pos)]
+        else:
+            return 99999999
 
     @staticmethod
     def center_text(text_obj, moving_tile_pos):

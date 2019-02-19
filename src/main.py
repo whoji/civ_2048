@@ -108,7 +108,7 @@ class CivGame(object):
                     if if_moved:
                         print("board updated !!")
                         print(self.board)
-                        self.mover = Mover(self.board.prev_board, action)
+                        self.mover = Mover(self.board.prev_board, action, self.board.stars_cap)
                         self.controller.game_status = 21
                         self.status_bar.update_status()
 

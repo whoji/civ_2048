@@ -32,10 +32,13 @@ python ./src/main.py
 * win condition
 * lose condition
 * penalty condition
-* refine the merge logic
+* better merge visual fx
 
 ### Off TODO list
 * `[2019-2-10]` objectify the main.py
+* `[2019-2-18]` refine the merge logic
+* `[2019-2-18]` better position for the star tiles
+* `[2019-2-18]` new spawn logic (production-related)
 
 ### Contact
 whoji (whoji@null.net)
